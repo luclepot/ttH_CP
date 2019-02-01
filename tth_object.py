@@ -18,7 +18,7 @@ import corner
 class tth_util:
     def _tprint(self, *inputs):
         for inp in inputs:
-            print(self._indent(text=inp, amount=1, ch='    >'))
+            print(self._indent(text=inp, amount=1, ch='    > '))
 
     def _hprint(self, *inputs):
         for inp in inputs:
@@ -149,16 +149,19 @@ class training(tth_util):
         self.forge.save('models/model')
 
 class validation(tth_util):
+    has_init = False
+    has_evaluate = False
+
     def __init__(self): 
         pass
 
     def run(self):
         self._hprint("Starting validation run")
-        self._tprint("", "Initalizing")
+        self._tprint(" ", "Initalizing")
         self.init(grid_spacing=100)
-        self._tprint("", "Evaluating data")
+        self._tprint(" ", "Evaluating data")
         self.evaluate()
-        self._tprint("", "Plotting results")
+        self._tprint(" ", "Plotting results")
         self.plot_results()
         self._hprint("Finished validation run")
 
@@ -171,8 +174,12 @@ class validation(tth_util):
 
         self.theta_denom = np.array([[0.,0.]])
         np.save('data/samples/theta_ref.npy', self.theta_denom)
+        self.has_init = True
 
     def evaluate(self):
+        if not self.has_init:
+            self._tprint("QUITTING: validation has not initialized")
+            return 
         self.forge = MLForge()
         self.forge.load('models/model')
 
@@ -195,6 +202,9 @@ class validation(tth_util):
         )
 
     def plot_results(self):
+        if not self.has_evaluate:
+            self._tprint("QUITTING: object has not yet evaluated any data!")
+            return 1
         #bin_size = theta_each[1] - theta_each[0]
         #edges = np.linspace(theta_each[0] - bin_size/2, theta_each[-1] + bin_size/2, len(theta_each)+1)
 
@@ -219,9 +229,9 @@ class validation(tth_util):
         print("best fit point for CP odd at:", best_fit_bsm)
         print("best fit point for mixed at:", best_fit_bsm_morph)
 
-        plt.plot(self.theta_each, -2*expected_llr, "o", label='CP even')
-        plt.plot(self.theta_each, -2*expected_llr_bsm, "o", label='CP odd')
-        plt.plot(self.theta_each, -2*expected_llr_bsm_morph, "o", label='mixed')
+        plt.plot(self.theta_each, -2*expected_llr, label='CP even')
+        plt.plot(self.theta_each, -2*expected_llr_bsm, label='CP odd')
+        plt.plot(self.theta_each, -2*expected_llr_bsm_morph, label='mixed')
 
         #pcm = ax.pcolormesh(edges, edges, -2. * expected_llr.reshape((15,15)),
         #                    norm=matplotlib.colors.Normalize(vmin=cmin, vmax=cmax),
