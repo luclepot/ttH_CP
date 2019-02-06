@@ -27,7 +27,9 @@ def new_tth_object(samples, theta_samples=100):
 def train_and_evaluate(t, name="carl", node_arch=(20,20,20), n_epochs=10, batch_size=512):
     t.training.init()
     t.training.train_method(name=name, node_arch=node_arch, n_epochs=n_epochs, batch_size=batch_size)
-    t.validation.run()
+    t.validation.init(grid_spacing=30)
+    t.validation.evaluate()
+    t.validation.plot_results(save_name="{}_{}_{}_{}".format(name, ".".join([str(w) for w in node_arch]), n_epochs, t.samples))
     return t
 
 class tth_util:
