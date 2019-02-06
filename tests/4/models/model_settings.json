@@ -1,0 +1,1 @@
+{"method": "alice", "method_type": "parameterized", "n_observables": 2, "n_parameters": 1, "n_hidden": [40, 40, 40], "activation": "tanh", "features": null}
