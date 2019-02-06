@@ -25,9 +25,9 @@ def new_tth_object(samples, theta_samples=100):
     t.sampling.extract_samples()
     return t
 
-def train_and_evaluate(t, name="carl", node_arch=(20,20,20), n_epochs=10):
+def train_and_evaluate(t, name="carl", node_arch=(20,20,20), n_epochs=10, batch_size=512):
     t.training.init()
-    t.training.train_method(node_arch=node_arch, n_epochs=n_epochs)
+    t.training.train_method(name=name, node_arch=node_arch, n_epochs=n_epochs, batch_size=batch_size)
     t.validation.run()
     return t
 
@@ -174,7 +174,7 @@ class validation(tth_util):
     def run(self):
         self._hprint("Starting validation run")
         self._tprint(" ", "Initalizing")
-        self.init(grid_spacing=100)
+        self.init(grid_spacing=21)
         self._tprint(" ", "Evaluating data")
         self.evaluate()
         self._tprint(" ", "Plotting results")

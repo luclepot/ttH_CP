@@ -1,0 +1,1 @@
+{"method": "alices", "method_type": "parameterized", "n_observables": 2, "n_parameters": 1, "n_hidden": [10, 10], "activation": "tanh", "features": null}
