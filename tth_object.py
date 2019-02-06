@@ -15,6 +15,22 @@ from madminer.ml import MLForge
 import logging
 import corner
 
+from time import time
+
+
+def new_tth_object(samples, theta_samples=100): 
+    t = tth(n_samples=samples)
+    t.sampling.init()
+    t.sampling.train_ratio(n_theta_samples=theta_samples)
+    t.sampling.extract_samples()
+    return t
+
+def train_and_evaluate(t, name="carl", node_arch=(20,20,20), n_epochs=10):
+    t.training.init()
+    t.training.train_method(node_arch=node_arch, n_epochs=n_epochs)
+    t.validation.run()
+    return t
+
 class tth_util:
     def _tprint(self, *inputs):
         for inp in inputs:
@@ -172,7 +188,7 @@ class validation(tth_util):
         self.theta_grid = np.array([self.theta_each]).T
         np.save('data/samples/theta_grid.npy', self.theta_grid)
 
-        self.theta_denom = np.array([[0.,0.]])
+        self.theta_denom = np.array([[0.5,0.5]])
         np.save('data/samples/theta_ref.npy', self.theta_denom)
         self.has_init = True
 
@@ -182,24 +198,31 @@ class validation(tth_util):
             return 
         self.forge = MLForge()
         self.forge.load('models/model')
-
+        self._tprint("Evaluating x_test:",)
+        t0 = time() 
         self.log_r_hat, _, _ = self.forge.evaluate(
             theta0_filename='data/samples/theta_grid.npy',
             x='data/samples/x_test.npy',
             evaluate_score=False
         )
-
+        print(time() - t0)
+        self._tprint("Evaluating x_test_bsm",)
+        t0 = time() 
         self.log_r_hat_bsm, _, _ = self.forge.evaluate(
             theta0_filename='data/samples/theta_grid.npy',
             x='data/samples/x_test_bsm.npy',
             evaluate_score=False
         )
-
+        print(time() - t0)
+        self._tprint("Evaluating x_test_bsm_morph",)
+        t0 = time() 
         self.log_r_hat_bsm_morph, _, _ = self.forge.evaluate(
             theta0_filename='data/samples/theta_grid.npy',
             x='data/samples/x_test_bsm_morph.npy',
             evaluate_score=False
         )
+        self.has_evaluate = True
+        print(time() - t0)
 
     def plot_results(self):
         if not self.has_evaluate:
