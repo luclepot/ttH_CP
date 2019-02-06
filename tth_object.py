@@ -17,7 +17,6 @@ import corner
 
 from time import time
 
-
 def new_tth_object(samples, theta_samples=100): 
     t = tth(n_samples=samples)
     t.sampling.init()
@@ -224,7 +223,7 @@ class validation(tth_util):
         self.has_evaluate = True
         print(time() - t0)
 
-    def plot_results(self):
+    def plot_results(self, save_name=None):
         if not self.has_evaluate:
             self._tprint("QUITTING: object has not yet evaluated any data!")
             return 1
@@ -269,6 +268,10 @@ class validation(tth_util):
 
         plt.legend()
         plt.tight_layout()
+
+        if save_name is not None:
+            plt.savefig(save_name)
+
         plt.show()
 
 class tth:
