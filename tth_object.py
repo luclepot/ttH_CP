@@ -29,7 +29,8 @@ def train_and_evaluate(t, name="carl", node_arch=(20,20,20), n_epochs=10, batch_
     t.training.train_method(name=name, node_arch=node_arch, n_epochs=n_epochs, batch_size=batch_size)
     t.validation.init(grid_spacing=30)
     t.validation.evaluate()
-    t.validation.plot_results(save_name="{}_{}_{}_{}".format(name, ".".join([str(w) for w in node_arch]), n_epochs, t.samples))
+    t.validation.plot_results(save_name="{}_{}_{}_{}".format(
+        name, ".".join([str(w) for w in node_arch]), n_epochs, t.n_samples))
     return t
 
 class tth_util:
@@ -48,6 +49,8 @@ class tth_util:
     def _indent(self, text, amount, ch=' '):
         padding = amount * ch
         return ''.join(padding+line for line in text.splitlines(True))
+
+
 
 class sampling(tth_util):
 
@@ -124,7 +127,7 @@ class training(tth_util):
         logging.basicConfig(
             format='%(asctime)-5.5s %(name)-20.20s %(levelname)-7.7s %(message)s',
             datefmt='%H:%M',
-            level=logging.INFO
+            level=logging.DEBUG
         )
 
         # Output of all other modules (e.g. matplotlib)
@@ -157,9 +160,10 @@ class training(tth_util):
             r_xz_filename='data/samples/r_xz_train1.npy',
             t_xz0_filename='data/samples/t_xz_train1.npy',
             n_hidden=node_arch,
-        #    alpha=5.,
+            alpha=5.,
         #    initial_lr=0.1,
             n_epochs=n_epochs,
+            activation="relu",
             validation_split=0.3,
             batch_size=batch_size
         )
@@ -272,9 +276,11 @@ class validation(tth_util):
         plt.tight_layout()
 
         if save_name is not None:
-            plt.savefig(save_name)
+            plt.savefig(save_name + ".png")
 
         plt.show()
+
+
 
 class tth:
     def __init__(self, use_parton_level=True, n_samples=100000):
